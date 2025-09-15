@@ -52,6 +52,22 @@ These instructions are for a standard desktop (Windows, macOS, Linux). See the n
 
 ---
 
+## Command-Line Parameters
+
+You can customize the slideshow's behavior using the following command-line arguments.
+
+| Parameter | Default | Description |
+| :--- | :--- | :--- |
+| `folder` | `posters` | The path to the folder containing your image and video files. This is a positional argument. |
+| `--overlays` | `overlays` | Specifies a folder with overlay images (e.g., `.png` files) to be randomly displayed on top of the media. |
+| `--delay` | `300` | The delay in seconds between each slide. Defaults to 5 minutes. |
+| `--random-delay`| `False` | When present, this flag overrides `--delay` and uses a random delay between 1 and 5 minutes for each slide. |
+| `--display` | `1` | Selects which display monitor to use. Use `1` for the primary monitor, `2` for secondary, and so on. Use `all` to span the slideshow across all connected monitors. |
+| `--windowed` | `False` | If included, the application will run in a standard resizable window instead of fullscreen mode. |
+| `--rotate` | `0` | Sets an initial rotation angle for all media. Valid values are `0`, `90`, `180`, and `270`. |
+
+---
+
 ## Raspberry Pi Kiosk Setup
 
 To have Postergeist run automatically on a Raspberry Pi when it boots:
