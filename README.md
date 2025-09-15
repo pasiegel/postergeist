@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://i.imgur.com/YLWdxAX.png" alt="Postergeist Logo" width="250">
+  <img src="https://i.imgur.com/YGI5vqk.png" alt="Postergeist Logo" width="250">
 </p>
 # Postergeist 👻
 
