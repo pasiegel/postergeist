@@ -82,9 +82,8 @@ To have Postergeist run automatically on a Raspberry Pi when it boots:
         [Desktop Entry]
         Type=Application
         Name=Postergeist
-        Exec=python /path/to/postergeist/your_script_name.py
+        Exec=python /path/to/postergeist/postergeist.py
         ```
-        *(Replace `your_script_name.py` with the actual name of the Python file)*.
 
     -   Save the file by pressing `Ctrl+X`, then `Y`, then `Enter`.
 
