@@ -1,6 +1,6 @@
 # Postergeist 👻
 
-*Your personal, poltergeist-powered movie poster slideshow.*
+*Your personal, python-powered poster slideshow.*
 
 ---
 
