@@ -11,7 +11,7 @@
 [![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Postergeist is a highly customizable, fullscreen slideshow application perfect for displaying your movie poster collection on a dedicated monitor or TV. It automatically creates beautiful, blurred backgrounds and supports both images and videos. It's designed to be run from the command line and is ideal for a low-power, set-it-and-forget-it setup like a Raspberry Pi.
+Postergeist is a highly customizable, fullscreen slideshow application perfect for displaying your movie poster collection on a dedicated monitor or TV. It automatically creates blurred backgrounds and supports both images and videos. It's designed to be run from the command line and is ideal for a low-power, set-it-and-forget-it setup like a Raspberry Pi.
 
 ---
 
