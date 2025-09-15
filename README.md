@@ -52,6 +52,21 @@ These instructions are for a standard desktop (Windows, macOS, Linux). See the n
 
 ---
 
+## ⌨️ Keyboard Controls
+
+Control the slideshow while it is running with these keyboard shortcuts.
+
+| Key | Action |
+| :--- | :--- |
+| `Right Arrow` | Manually advance to the **next** slide. |
+| `Left Arrow` | Go back to the **previous** slide. |
+| `Spacebar` | **Pause** or **resume** the automatic slideshow. |
+| `r` | **Rotate** the current image or video 90 degrees clockwise. |
+| `F5` | **Refresh** the file list from the source folder(s) without restarting. |
+| `Esc` | **Exit** the slideshow. |
+
+---
+
 ## Command-Line Parameters
 
 You can customize the slideshow's behavior using the following command-line arguments.
