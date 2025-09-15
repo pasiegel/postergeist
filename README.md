@@ -1,3 +1,6 @@
+<p align="center">
+  <img src="https://i.imgur.com/YLWdxAX.png" alt="Postergeist Logo" width="250">
+</p>
 # Postergeist 👻
 
 *Your personal, python-powered poster slideshow.*
