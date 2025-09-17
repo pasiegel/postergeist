@@ -98,7 +98,7 @@ class Postergeist:
         poster_y = 0
         background.paste(poster, (poster_x, poster_y))
 
-        if self.overlays:
+        if self.overlays and poster.height < canvas_h:
             overlay_path = random.choice(self.overlays)
             try:
                 with Image.open(overlay_path) as overlay_img:
