@@ -28,7 +28,7 @@ Postergeist is a highly customizable, fullscreen slideshow application perfect f
 
 ## Installation
 
-These instructions are for a standard desktop (Windows, macOS, Linux). See the platform-specific sections for Raspberry Pi and Arch Linux setup.
+These instructions are for a standard desktop (Windows, macOS, Linux). See the platform-specific sections for Raspberry Pi, macOS, Arch Linux, and Debian/Ubuntu setup.
 
 1.  **Clone the repository:**
     ```bash
@@ -38,7 +38,7 @@ These instructions are for a standard desktop (Windows, macOS, Linux). See the p
 
 2.  **Create a Virtual Environment (Recommended):**
     ```bash
-    python -m venv .venv
+    python3 -m venv .venv
     source .venv/bin/activate  # On Windows, use: .venv\Scripts\activate
     ```
 
@@ -128,6 +128,58 @@ To have Postergeist run automatically on a Raspberry Pi when it boots:
 
 ---
 
+## macOS Kiosk Setup
+
+To have Postergeist run automatically when you log in on macOS:
+
+1.  **Install Homebrew**: If you don't have it, install the Homebrew package manager.
+    ```bash
+    /bin/bash -c "$(curl -fsSL [https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh](https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh))"
+    ```
+
+2.  **Install Dependencies**: Use Homebrew to install the necessary libraries.
+    ```bash
+    brew install python-tk opencv
+    ```
+
+3.  **Follow the main installation steps 1-4**: Clone the repository, create a virtual environment, and install the Python packages from `requirements.txt`.
+
+4.  **Set up Autostart with `launchd`**: We will create a `.plist` file to tell macOS to launch the script on login.
+
+    -   Create the `LaunchAgents` directory if it doesn't exist:
+        ```bash
+        mkdir -p ~/Library/LaunchAgents
+        ```
+    -   Create a new property list file:
+        ```bash
+        nano ~/Library/LaunchAgents/com.user.postergeist.plist
+        ```
+    -   Paste the following XML into the file. **Important**: You must change the path `/path/to/postergeist/postergeist.py` to the **actual full path** where you cloned the repository.
+
+        ```xml
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "[http://www.apple.com/DTDs/PropertyList-1.0.dtd](http://www.apple.com/DTDs/PropertyList-1.0.dtd)">
+        <plist version="1.0">
+        <dict>
+            <key>Label</key>
+            <string>com.user.postergeist</string>
+            <key>ProgramArguments</key>
+            <array>
+                <string>/usr/bin/python3</string>
+                <string>/path/to/postergeist/postergeist.py</string>
+            </array>
+            <key>RunAtLoad</key>
+            <true/>
+        </dict>
+        </plist>
+        ```
+
+    -   Save the file by pressing `Ctrl+X`, then `Y`, then `Enter`.
+
+5.  **Log Out and Log In**: The script will now start automatically the next time you log into your Mac user account.
+
+---
+
 ## Arch Linux Global Install
 
 You can make `postergeist` available as a global command on Arch Linux by using the provided installation script. This script will install dependencies, make the Python script executable, and copy it to a directory in your system's PATH.
@@ -147,15 +199,11 @@ You can make `postergeist` available as a global command on Arch Linux by using 
 ### Install Script (`install-arch.sh`)
 ```bash
 #!/bin/bash
-#
 # A script to install the Postergeist slideshow globally on Arch Linux
 
 # --- Configuration ---
-# The filename of your Python script
 PYTHON_SCRIPT="postergeist.py"
-# The command name you want to use globally
 INSTALL_NAME="postergeist"
-# Where to install the executable
 INSTALL_DIR="/usr/local/bin"
 
 # --- Main Script ---
@@ -178,14 +226,11 @@ echo "✅ Dependencies installed successfully."
 echo
 
 # 2. Prepare the Python script
-# Check if the python script exists in the current directory
 if [ ! -f "$PYTHON_SCRIPT" ]; then
     echo "Error: The script '$PYTHON_SCRIPT' was not found in the current directory." >&2
-    echo "Please ensure your Python code is saved as '$PYTHON_SCRIPT' in this directory." >&2
     exit 1
 fi
 
-# Add a shebang line to the python script if it doesn't have one
 if ! grep -q "^#!" "$PYTHON_SCRIPT"; then
     echo "Adding shebang '#!/usr/bin/env python3' to '$PYTHON_SCRIPT'..."
     sed -i '1s,^,#!/usr/bin/env python3\n,' "$PYTHON_SCRIPT"
