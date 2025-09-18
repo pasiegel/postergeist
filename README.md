@@ -7,7 +7,6 @@
 
 ---
 
-
 [![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -29,7 +28,7 @@ Postergeist is a highly customizable, fullscreen slideshow application perfect f
 
 ## Installation
 
-These instructions are for a standard desktop (Windows, macOS, Linux). See the next section for Raspberry Pi-specific setup.
+These instructions are for a standard desktop (Windows, macOS, Linux). See the platform-specific sections for Raspberry Pi and Arch Linux setup.
 
 1.  **Clone the repository:**
     ```bash
@@ -129,10 +128,85 @@ To have Postergeist run automatically on a Raspberry Pi when it boots:
 
 ---
 
-## Usage
+## Arch Linux Global Install
 
-Run the script from the command line.
+You can make `postergeist` available as a global command on Arch Linux by using the provided installation script. This script will install dependencies, make the Python script executable, and copy it to a directory in your system's PATH.
 
-**Basic command:**
+1.  **Save the Install Script**: Create a new file named `install-arch.sh` and paste the contents below into it. Make sure it's in the same directory as your `postergeist.py` script.
+
+2.  **Make the Script Executable**:
+    ```bash
+    chmod +x install-arch.sh
+    ```
+
+3.  **Run with Sudo**:
+    ```bash
+    sudo ./install-arch.sh
+    ```
+
+### Install Script (`install-arch.sh`)
 ```bash
-python postergeist.py
+#!/bin/bash
+#
+# A script to install the Postergeist slideshow globally on Arch Linux
+
+# --- Configuration ---
+# The filename of your Python script
+PYTHON_SCRIPT="postergeist.py"
+# The command name you want to use globally
+INSTALL_NAME="postergeist"
+# Where to install the executable
+INSTALL_DIR="/usr/local/bin"
+
+# --- Main Script ---
+# Check for root privileges
+if [[ $EUID -ne 0 ]]; then
+    echo "This script must be run as root. Please use 'sudo'." 1>&2
+    exit 1
+fi
+
+echo "--- Postergeist Global Installer for Arch Linux ---"
+
+# 1. Install dependencies with pacman
+echo "Updating package database and installing dependencies..."
+pacman -Syu --noconfirm --needed python python-pillow python-opencv tk python-screeninfo
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to install dependencies with pacman." >&2
+    exit 1
+fi
+echo "✅ Dependencies installed successfully."
+echo
+
+# 2. Prepare the Python script
+# Check if the python script exists in the current directory
+if [ ! -f "$PYTHON_SCRIPT" ]; then
+    echo "Error: The script '$PYTHON_SCRIPT' was not found in the current directory." >&2
+    echo "Please ensure your Python code is saved as '$PYTHON_SCRIPT' in this directory." >&2
+    exit 1
+fi
+
+# Add a shebang line to the python script if it doesn't have one
+if ! grep -q "^#!" "$PYTHON_SCRIPT"; then
+    echo "Adding shebang '#!/usr/bin/env python3' to '$PYTHON_SCRIPT'..."
+    sed -i '1s,^,#!/usr/bin/env python3\n,' "$PYTHON_SCRIPT"
+fi
+chmod +x "$PYTHON_SCRIPT"
+echo "✅ Python script is now executable."
+echo
+
+# 3. Install the script to the system PATH
+echo "Installing '$PYTHON_SCRIPT' to '$INSTALL_DIR/$INSTALL_NAME'..."
+cp "$PYTHON_SCRIPT" "$INSTALL_DIR/$INSTALL_NAME"
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to copy the script to '$INSTALL_DIR'." >&2
+    exit 1
+fi
+echo "✅ Installation complete."
+echo
+
+# --- Final Instructions ---
+echo "You can now run the slideshow from anywhere in your terminal by typing:"
+echo "$> $INSTALL_NAME [options] /path/to/your/images"
+echo
+echo "To see all available options, run:"
+echo "$> $INSTALL_NAME --help"
