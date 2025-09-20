@@ -32,7 +32,7 @@ These instructions are for a standard desktop (Windows, macOS, Linux). See the p
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/pasiegel/postergeist.git](https://github.com/pasiegel/postergeist.git)
+    git clone https://github.com/pasiegel/postergeist.git
     cd postergeist
     ```
 
