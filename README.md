@@ -96,6 +96,8 @@ To have Postergeist run automatically on a Raspberry Pi when it boots:
     ```bash
     sudo apt-get update
     sudo apt-get install python3-tk
+    sudo apt-get install python3-opencv
+    sudo apt-get install python3-screeninfo
     ```
 
 3.  **Set up Autostart:**
