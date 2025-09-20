@@ -95,10 +95,7 @@ To have Postergeist run automatically on a Raspberry Pi when it boots:
     Ensure you have Python's Tkinter library installed, which is required for the GUI.
     ```bash
     sudo apt-get update
-    sudo apt-get install python3-tk
-    sudo apt-get install python3-opencv
-    sudo apt-get install python3-screeninfo
-    sudo apt-get install python3-pil
+    sudo apt-get install -y python3-tk python3-pil python3-pil.imagetk python3-opencv python3-screeninfo
     ```
 
 3.  **Set up Autostart:**
