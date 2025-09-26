@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://i.imgur.com/YGI5vqk.png" alt="Postergeist Logo" width="250">
 </p>
-# Postergeist 👻 v1.3.0
+# Postergeist 👻 v1.4.0
 
 *Your personal, python-powered poster slideshow.*
 
@@ -10,20 +10,51 @@
 [![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Postergeist is a highly customizable, fullscreen slideshow application perfect for displaying your movie poster collection on a dedicated monitor or TV. It automatically creates blurred backgrounds and supports both images and videos. It's designed to be run from the command line and is ideal for a low-power, set-it-and-forget-it setup like a Raspberry Pi.
+Postergeist is a highly customizable, fullscreen slideshow application perfect for displaying your movie poster collection on a dedicated monitor or TV. It automatically creates blurred backgrounds, supports both images and videos, and can now be themed using folder-based tags. It's designed to be run from the command line and is ideal for a low-power, set-it-and-forget-it setup like a Raspberry Pi.
 
 ---
 
 ## Features
 
 -   **Image & Video Support**: Displays a wide range of file types, including `.jpg`, `.png`, `.webp`, `.mp4`, `.mkv`, and more.
+-   **Recursive Scanning** 🆕: Automatically finds media in all subdirectories of your main `posters` folder.
+-   **Themed Overlays** 🆕: Assign specific overlays to different folders using a simple `_tag` naming convention.
 -   **Dynamic Backgrounds**: Automatically generates a blurred, fullscreen background from the current poster for a seamless look.
--   **Custom Overlays**: Add your own transparent `.png` overlays (like a "Now Showing" banner) that are randomly selected. Supports **animated GIFs** and **APNG overlays** 🆕.
+-   **Animated Overlays**: Add your own transparent `.png`, animated `.gif`, or `.apng` overlays that are randomly selected or assigned via tags.
 -   **Multi-Monitor Control**: Choose which display to run on, or span across all monitors.
--   **Flexible Timing**: Set a fixed delay between slides or use a random delay for a more natural feel.
+-   **Flexible Timing**: Set a fixed delay between slides or use a random delay. Now includes an option to limit video playback time.
 -   **Full Keyboard Control**: Pause, play, skip, go back, rotate posters, and refresh the file list with simple hotkeys.
--   **Performance Mode** 🆕: Toggle effects like glow blur for smoother playback on low-powered devices.
+-   **Performance Mode**: Toggle effects like glow blur for smoother playback on low-powered devices.
 -   **Raspberry Pi Ready**: Lightweight and includes instructions for easy autostart on boot.
+
+---
+
+## ✨ Themed Overlays (Folder Tags)
+
+You can now assign specific overlays to entire folders of media, allowing you to create different themes for your collection (e.g., a VHS effect for horror movies, a retro TV frame for 80s sci-fi).
+
+The logic is simple: **Folder Name** + **\_** + **Tag**.
+
+1.  **Organize Your Media**: Inside your main `posters` folder, create subfolders for different categories (e.g., `Horror`, `SciFi`).
+2.  **Add a Tag**: Rename the subfolder by appending an underscore and a tag name. For example, `Horror` becomes `Horror_vhs`. The tag here is `vhs`.
+3.  **Create a Matching Overlay**: In your `overlays` folder, add an image or GIF whose filename (without the extension) exactly matches the tag. For the `_vhs` tag, you would create `vhs.png` or `vhs.gif`.
+
+The script will automatically apply the correct overlay. If a folder has no tag, it will use a random overlay as a fallback.
+
+### Example Structure
+-   `postergeist/`
+    -   `posters/`
+        -   `Horror_vhs/` (This folder uses the **`vhs`** tag)
+            -   `movie1.mp4`
+            -   `movie2.jpg`
+        -   `SciFi_80s/` (This folder uses the **`80s`** tag)
+            -   `movie3.mkv`
+            -   `movie4.png`
+    -   `overlays/`
+        -   `vhs.png` (Matches the `_vhs` tag)
+        -   `80s.gif` (Matches the `_80s` tag)
+        -   `random_overlay.apng` (Fallback for untagged folders)
+    -   `postergeist.py`
 
 ---
 
@@ -33,7 +64,7 @@ These instructions are for a standard desktop (Windows, macOS, Linux). See the p
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/pasiegel/postergeist.git
+    git clone [https://github.com/pasiegel/postergeist.git](https://github.com/pasiegel/postergeist.git)
     cd postergeist
     ```
 
@@ -51,7 +82,7 @@ These instructions are for a standard desktop (Windows, macOS, Linux). See the p
     *(Note: If you don't have a `requirements.txt` file, you can install the packages manually: `pip install opencv-python Pillow screeninfo`)*
 
 4.  **Create Folders:**
-    Create a folder named `posters` in the project directory and add your image and video files. Optionally, create an `overlays` folder and add any `.png`, `.gif`, or `.apng` overlays you'd like to use.
+    Create a folder named `posters` in the project directory and add your image/video files (or subfolders). Optionally, create an `overlays` folder and add any `.png`, `.gif`, or `.apng` overlays.
 
 ---
 
@@ -70,13 +101,16 @@ Control the slideshow while it is running with these keyboard shortcuts.
 
 ---
 
-## 🆕 What’s New in v1.3
+## 🆕 What’s New in v1.4
+- **Themed Overlays**: Assign specific overlays to media folders using a `FolderName_tag` naming convention.
+- **Subdirectory Scanning**: The slideshow now automatically finds and includes media from all subfolders.
+- **Video Time Limit** (`--max-video-time`): A new option to ensure videos don't exceed the slide delay, cutting them off if they are too long. This creates a more consistent, TV-like channel surfing experience.
 - **Animated Overlays**: Now supports `.gif` and `.apng` overlays in addition to static images.  
 - **Performance Mode** (`--performance-mode`): Disable glow blur and other intensive effects for smoother playback on low-powered hardware.  
 - **Fade Height Control** (`--fade-height`): Adjust the faded bottom section of posters as a percentage (default `20`).  
 - **Improved Overlay Behavior**: Overlays are suppressed when posters/videos nearly fill the entire screen.  
-- **Cached Video Backgrounds**: Faster performance by caching blurred video backgrounds.  
-
+- **Cached Video Backgrounds**: Faster performance by caching blurred video backgrounds.
+  
 ---
 
 ## Command-Line Parameters
@@ -86,14 +120,15 @@ You can customize the slideshow's behavior using the following command-line argu
 | Parameter | Default | Description |
 | :--- | :--- | :--- |
 | `folder` | `posters` | The path to the folder containing your image and video files. This is a positional argument. |
-| `--overlays` | `overlays` | Specifies a folder with overlay images (`.png`, `.jpg`, `.gif`, `.apng`) to be randomly displayed on top of the media. |
+| `--overlays` | `overlays` | Specifies a folder with overlay images (`.png`, `.jpg`, `.gif`, `.apng`). |
 | `--delay` | `300` | The delay in seconds between each slide. Defaults to 5 minutes. |
 | `--random-delay`| `False` | When present, this flag overrides `--delay` and uses a random delay between 1 and 5 minutes for each slide. |
+| `--max-video-time` 🆕 | `False` | Limits video playback to the `--delay` duration. If a video is longer than the delay, it will be cut short. |
 | `--display` | `1` | Selects which display monitor to use. Use `1` for the primary monitor, `2` for secondary, and so on. Use `all` to span the slideshow across all connected monitors. |
 | `--windowed` | `False` | If included, the application will run in a standard resizable window instead of fullscreen mode. |
 | `--rotate` | `0` | Sets an initial rotation angle for all media. Valid values are `0`, `90`, `180`, and `270`. |
-| `--fade-height` 🆕 | `20` | Sets the fade height at the bottom of posters as a percentage. |
-| `--performance-mode` 🆕 | `False` | Disables glow and other intensive effects for better performance. |
+| `--fade-height` | `20` | Sets the fade height at the bottom of posters as a percentage. |
+| `--performance-mode` | `False` | Disables glow and other intensive effects for better performance. |
 
 ---
 
@@ -146,7 +181,7 @@ To have Postergeist run automatically when you log in on macOS:
 
 1.  **Install Homebrew**: If you don't have it, install the Homebrew package manager.
     ```bash
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    /bin/bash -c "$(curl -fsSL [https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh](https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh))"
     ```
 
 2.  **Install Dependencies**: Use Homebrew to install the necessary libraries.
@@ -170,7 +205,7 @@ To have Postergeist run automatically when you log in on macOS:
 
         ```xml
         <?xml version="1.0" encoding="UTF-8"?>
-        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "[http://www.apple.com/DTDs/PropertyList-1.0.dtd](http://www.apple.com/DTDs/PropertyList-1.0.dtd)">
         <plist version="1.0">
         <dict>
             <key>Label</key>
