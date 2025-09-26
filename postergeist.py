@@ -22,7 +22,6 @@ class Postergeist:
         self.delay = delay
         self.random_delay = random_delay
         self.fade_height_percent = fade_height
-        # --- NEW ---
         self.performance_mode = performance_mode
 
         self.files = self.load_files(folder)
@@ -73,8 +72,13 @@ class Postergeist:
 
     def load_files(self, folder):
         exts = (".jpg", ".jpeg", ".png", ".webp", ".bmp", ".gif", ".mp4", ".mov", ".avi", ".mkv")
+        file_list = []
         try:
-            return [os.path.join(folder, f) for f in os.listdir(folder) if f.lower().endswith(exts)]
+            for root, _, files in os.walk(folder):
+                for f in files:
+                    if f.lower().endswith(exts):
+                        file_list.append(os.path.join(root, f))
+            return file_list
         except FileNotFoundError:
             return []
 
@@ -121,7 +125,6 @@ class Postergeist:
             self.suppress_overlay = True
         else:
             self.suppress_overlay = False
-            # --- MODIFIED: Glow effect is skipped in performance mode ---
             if not self.performance_mode:
                 glow = poster.filter(ImageFilter.GaussianBlur(25))
                 glow_x = (canvas_w - p_w) // 2
@@ -188,24 +191,38 @@ class Postergeist:
 
         do_step()
 
-    def _select_new_overlay(self):
+    def _select_new_overlay(self, media_path):
         self.active_overlay_path = None
         self.active_overlay_frames = []
         self.active_overlay_index = 0
-        if self.overlays:
+        tagged_overlay_found = False
+
+        folder_name = os.path.basename(os.path.dirname(media_path))
+
+        if '_' in folder_name:
+            tag = folder_name.rsplit('_', 1)[-1]
+            for overlay_file_path in self.overlays:
+                overlay_filename_no_ext = os.path.splitext(os.path.basename(overlay_file_path))[0]
+                if overlay_filename_no_ext == tag:
+                    self.active_overlay_path = overlay_file_path
+                    tagged_overlay_found = True
+                    break
+
+        if not tagged_overlay_found and self.overlays:
             self.active_overlay_path = random.choice(self.overlays)
-            if self.active_overlay_path.lower().endswith((".gif", ".apng")):
-                try:
-                    with Image.open(self.active_overlay_path) as img:
-                        self.active_overlay_duration = img.info.get('duration', 100)
-                        self.active_overlay_frames = [frame.copy() for frame in ImageSequence.Iterator(img)]
-                except Exception as e:
-                    print(f"Error loading animated overlay {os.path.basename(self.active_overlay_path)}: {e}")
-                    self.active_overlay_path = None
+
+        if self.active_overlay_path and self.active_overlay_path.lower().endswith((".gif", ".apng")):
+            try:
+                with Image.open(self.active_overlay_path) as img:
+                    self.active_overlay_duration = img.info.get('duration', 100)
+                    self.active_overlay_frames = [frame.copy() for frame in ImageSequence.Iterator(img)]
+            except Exception as e:
+                print(f"Error loading animated overlay {os.path.basename(self.active_overlay_path)}: {e}")
+                self.active_overlay_path = None
 
     def show_image(self, path):
         self.cached_video_background = None
-        self._select_new_overlay()
+        self._select_new_overlay(path)
         try:
             with Image.open(path) as img:
                 img_rgba = img.convert("RGBA")
@@ -233,7 +250,7 @@ class Postergeist:
         screen_w = self.root.winfo_width()
         screen_h = self.root.winfo_height()
         if vid_w < screen_w * 0.95 or vid_h < screen_h * 0.95:
-            self._select_new_overlay()
+            self._select_new_overlay(path)
         else:
             self.active_overlay_path = None
             self.active_overlay_frames = []
@@ -318,7 +335,6 @@ class Postergeist:
         if self.video_capture and self.video_capture.isOpened():
             self.show_file()
         else:
-            # Need to reload the static image to redraw it
             if self.files:
                 self.show_image(self.files[self.index])
 
@@ -357,7 +373,6 @@ def main():
     parser.add_argument("--rotate", type=int, default=0, choices=[0, 90, 180, 270], help="Starting rotation")
     parser.add_argument("--fade-height", type=int, default=20,
                         help="Fade height at bottom of poster as a percentage (e.g., 20)")
-    # --- NEW ARGUMENT ---
     parser.add_argument("--performance-mode", action="store_true",
                         help="Disable intensive effects like glow for better performance")
     args = parser.parse_args()
