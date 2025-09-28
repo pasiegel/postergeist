@@ -15,7 +15,7 @@ class Postergeist:
     FRAME_INTERVAL_MS = 1000 // 30
 
     def __init__(self, root, folder, overlay_folder, delay, random_delay, start_rotation, fade_duration=1000,
-                 fade_height=20, performance_mode=False):
+                 fade_height=20, performance_mode=False, tags=None):
         self.root = root
         self.folder = folder
         self.overlay_folder = overlay_folder
@@ -23,8 +23,9 @@ class Postergeist:
         self.random_delay = random_delay
         self.fade_height_percent = fade_height
         self.performance_mode = performance_mode
+        self.tags = tags
 
-        self.files = self.load_files(folder)
+        self.files = self.load_files(folder, self.tags)
         self.overlays = self.load_overlays(overlay_folder)
 
         self.running = True
@@ -70,14 +71,27 @@ class Postergeist:
         else:
             self.root.after(100, self.show_file)
 
-    def load_files(self, folder):
-        exts = (".jpg", ".jpeg", ".png", ".webp", ".bmp", ".gif", ".mp4", ".mov", ".avi", ".mkv")
+    def load_files(self, folder, tags=None):
+        exts = (".jpg", ".jpeg", ".png", ".webp", ".bmp", ".gif", ".mp4", ".mov", ".avi", ".mkv", ".webm")
         file_list = []
+        tag_set = set(tags) if tags else None
+
         try:
             for root, _, files in os.walk(folder):
-                for f in files:
-                    if f.lower().endswith(exts):
-                        file_list.append(os.path.join(root, f))
+                # If a tag filter is active, check the folder's tag
+                if tag_set:
+                    folder_name = os.path.basename(root)
+                    if '_' in folder_name:
+                        folder_tag = folder_name.rsplit('_', 1)[-1]
+                        # Only proceed if the folder's tag is in the filter set
+                        if folder_tag in tag_set:
+                            for f in files:
+                                if f.lower().endswith(exts):
+                                    file_list.append(os.path.join(root, f))
+                else:  # Otherwise, if no tag filter, add all files
+                    for f in files:
+                        if f.lower().endswith(exts):
+                            file_list.append(os.path.join(root, f))
             return file_list
         except FileNotFoundError:
             return []
@@ -96,7 +110,7 @@ class Postergeist:
         self.index = random.randrange(len(self.files)) if self.files else 0
 
     def refresh_files(self):
-        self.files = self.load_files(self.folder)
+        self.files = self.load_files(self.folder, self.tags)
         if not self.files:
             self.show_splash()
         else:
@@ -298,7 +312,7 @@ class Postergeist:
             self.show_splash()
             return
         path = self.files[self.index]
-        if path.lower().endswith((".mp4", ".mov", ".avi", ".mkv")):
+        if path.lower().endswith((".mp4", ".mov", ".avi", ".mkv", ".webm")):
             self.show_video(path)
         else:
             self.show_image(path)
@@ -375,6 +389,7 @@ def main():
                         help="Fade height at bottom of poster as a percentage (e.g., 20)")
     parser.add_argument("--performance-mode", action="store_true",
                         help="Disable intensive effects like glow for better performance")
+    parser.add_argument("--tag", nargs='+', help="Only show media from folders with a specific tag (e.g., posters_scifi)")
     args = parser.parse_args()
 
     if not os.path.exists(args.folder):
@@ -411,7 +426,7 @@ def main():
         root.config(cursor="none")
 
     Postergeist(root, args.folder, overlay_folder, args.delay, args.random_delay, args.rotate,
-                fade_height=args.fade_height, performance_mode=args.performance_mode)
+                fade_height=args.fade_height, performance_mode=args.performance_mode, tags=args.tag)
     root.mainloop()
 
 
